@@ -7,9 +7,7 @@ import ait.cohort5860.post.dto.PostDto;
 import ait.cohort5860.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -26,50 +24,50 @@ public class PostController {
 
     private final PostService postService;
 
-    @Override
+    @PostMapping("/post/{author}")
     @ResponseStatus(HttpStatus.CREATED)
-    public PostDto addPost(String author, AddPostDto addPostDto) {
-        return null;
+    public PostDto addPost(@PathVariable String author, @RequestBody AddPostDto addPostDto) {
+        return postService.addPost(author, addPostDto);
     }
 
-    @Override
+    @GetMapping("/post/{id}")
     public PostDto findPostById(Long id) {
         return null;
     }
 
-    @Override
+    @PatchMapping("/post/{id}/like")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addLike(Long id) {
-
+    public void addLike(@PathVariable Long id) {
+        postService.addLike(id);
     }
 
-    @Override
-    public List<PostDto> findPostsByAuthor(String author) {
-        return List.of();
+    @GetMapping("/posts/author/{author}")
+    public List<PostDto> findPostsByAuthor(@PathVariable String author) {
+        return postService.findPostsByAuthor(author);
     }
 
-    @Override
-    public PostDto addComment(Long id, String author, AddCommentDto addCommentDto) {
-        return null;
+    @PatchMapping("/post/{id}/comment/{author}")
+    public PostDto addComment(@PathVariable Long id, @PathVariable String author, @RequestBody AddCommentDto addCommentDto) {
+        return postService.addComment(id, author, addCommentDto);
     }
 
-    @Override
-    public PostDto deletePost(Long id) {
-        return null;
+    @DeleteMapping("/post/{id}")
+    public PostDto deletePost(@PathVariable Long id) {
+        return postService.deletePost(id);
     }
 
-    @Override
-    public List<PostDto> findPostsByTags(Set<String> tags) {
-        return List.of();
+    @GetMapping("/posts/tags")
+    public List<PostDto> findPostsByTags(@RequestParam Set<String> tags) {
+        return postService.findPostsByTags(tags);
     }
 
-    @Override
-    public List<PostDto> findPostsByPeriod(LocalDate from, LocalDate to) {
-        return List.of();
+    @GetMapping("/posts/period")
+    public List<PostDto> findPostsByPeriod(@RequestParam(name = "dateFrom") LocalDate from, @RequestParam(name = "dateTo") LocalDate to) {
+        return postService.findPostsByPeriod(from, to);
     }
 
-    @Override
-    public PostDto updatePost(Long id, AddPostDto addPostDto) {
-        return null;
+    @PatchMapping("/post/{id}")
+    public PostDto updatePost(@PathVariable Long id, @RequestBody AddPostDto addPostDto) {
+        return postService.updatePost(id, addPostDto);
     }
 }
