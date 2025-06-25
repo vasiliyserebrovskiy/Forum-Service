@@ -31,8 +31,8 @@ public class PostController {
     }
 
     @GetMapping("/post/{id}")
-    public PostDto findPostById(Long id) {
-        return null;
+    public PostDto findPostById(@PathVariable Long id) {
+        return postService.findPostById(id);
     }
 
     @PatchMapping("/post/{id}/like")
