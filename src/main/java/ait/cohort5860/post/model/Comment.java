@@ -27,9 +27,16 @@ public class Comment {
     @ManyToOne
     private Post post;
 
+    //using this constructor, we will have post_id in DB equals null.
     public Comment(String user, String message) {
         this.username = user;
         this.message = message;
+    }
+    // We need to create a relation between comment and post.
+    public Comment(String user, String message, Post post) {
+        this.username = user;
+        this.message = message;
+        this.post = post;
     }
 
     public void addLike() {

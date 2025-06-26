@@ -1,11 +1,13 @@
 package ait.cohort5860.post.service;
 
+import ait.cohort5860.post.dao.CommentRepository;
 import ait.cohort5860.post.dao.PostRepository;
 import ait.cohort5860.post.dao.TagRepository;
 import ait.cohort5860.post.dto.AddCommentDto;
 import ait.cohort5860.post.dto.AddPostDto;
 import ait.cohort5860.post.dto.PostDto;
 import ait.cohort5860.post.dto.exceptions.NotFoundException;
+import ait.cohort5860.post.model.Comment;
 import ait.cohort5860.post.model.Post;
 import ait.cohort5860.post.model.Tag;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +25,11 @@ import java.util.Set;
  */
 @Service
 @RequiredArgsConstructor
-public class PostServiceImpl implements PostService{
+public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final TagRepository tagRepository;
+    private final CommentRepository commentRepository;
     private final ModelMapper modelMapper;
 
     @Override
@@ -36,7 +39,7 @@ public class PostServiceImpl implements PostService{
 
         // Handle tags
         Set<String> tags = addPostDto.getTags();
-        if(tags != null) {
+        if (tags != null) {
             for (String tagName : tags) {
                 Tag tag = tagRepository.findById(tagName).orElseGet(() -> tagRepository.save(new Tag(tagName)));
                 post.addTag(tag);
@@ -54,17 +57,33 @@ public class PostServiceImpl implements PostService{
 
     @Override
     public void addLike(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(NotFoundException::new);
+        post.addLike();
+        postRepository.save(post);
 
     }
 
     @Override
     public List<PostDto> findPostsByAuthor(String author) {
-        return List.of();
+        return postRepository.findPostsByAuthor(author).stream()
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
     }
 
     @Override
+    @Transactional
     public PostDto addComment(Long id, String author, AddCommentDto addCommentDto) {
-        return null;
+        // 1 need to find post
+        Post post = postRepository.findById(id).orElseThrow(NotFoundException::new);
+        // 2 create comment
+        Comment comment = new Comment(author, addCommentDto.getMessage(), post);
+        // 3 save comment to DB
+        commentRepository.save(comment);
+        // 4 add comment to post
+        post.addComment(comment);
+        // 5 save post
+        postRepository.save(post);
+        return modelMapper.map(post, PostDto.class);
     }
 
     @Override
