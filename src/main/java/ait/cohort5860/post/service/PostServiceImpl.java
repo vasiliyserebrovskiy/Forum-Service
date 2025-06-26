@@ -113,13 +113,50 @@ public class PostServiceImpl implements PostService {
         LocalDateTime fromDataTime = from.atStartOfDay();
         LocalDateTime toDateTime = to.plusDays(1).atStartOfDay();
 
-        return postRepository.findByDateCreatedBetween(fromDataTime,toDateTime).stream()
+        return postRepository.findByDateCreatedBetween(fromDataTime, toDateTime).stream()
                 .map(post -> modelMapper.map(post, PostDto.class))
                 .toList();
     }
 
     @Override
     public PostDto updatePost(Long id, AddPostDto addPostDto) {
-        return null;
+        Post post = postRepository.findById(id).orElseThrow(NotFoundException::new);
+
+        // Working with tags
+        // We need to correct Tags: delete old and create new for this post if Set<Tag> newTags not empty
+        Set<String> newTags = addPostDto.getTags();
+        if (!newTags.isEmpty()) {
+            // remove all old tags, which we did not have in new Set<Tags>
+            Set<Tag> existingTags = post.getTags();
+            existingTags.removeIf(tag ->
+                    newTags.stream()
+                            .noneMatch(name -> name.equalsIgnoreCase(tag.getName()))
+            );
+
+            //add new Tags
+            for (String tagName : newTags) {
+                boolean exists = existingTags.stream()
+                        .anyMatch(tag -> tag.getName().equalsIgnoreCase(tagName));
+
+                if (!exists) {
+                    Tag tag = tagRepository.findByNameIgnoreCase(tagName)
+                            .orElseGet(() -> tagRepository.save(new Tag(tagName)));
+                    existingTags.add(tag);
+                }
+            }
+        } // end for newTags != null
+
+        // Working with title
+        if (!addPostDto.getTitle().isEmpty()) {
+            post.setTitle(addPostDto.getTitle());
+        }
+
+        // Working with content
+        if (!addPostDto.getContent().isEmpty()) {
+            post.setContent(addPostDto.getContent());
+        }
+
+        postRepository.save(post);
+        return modelMapper.map(post, PostDto.class);
     }
 }
