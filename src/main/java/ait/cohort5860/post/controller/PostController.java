@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -62,7 +63,7 @@ public class PostController {
     }
 
     @GetMapping("/posts/period")
-    public List<PostDto> findPostsByPeriod(@RequestParam(name = "dateFrom") LocalDate from, @RequestParam(name = "dateTo") LocalDate to) {
+    public List<PostDto> findPostsByPeriod(@RequestParam("dateFrom") LocalDate from, @RequestParam("dateTo") LocalDate  to) {
         return postService.findPostsByPeriod(from, to);
     }
 

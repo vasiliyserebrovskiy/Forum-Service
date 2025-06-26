@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -108,7 +109,13 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostDto> findPostsByPeriod(LocalDate from, LocalDate to) {
-        return List.of();
+
+        LocalDateTime fromDataTime = from.atStartOfDay();
+        LocalDateTime toDateTime = to.plusDays(1).atStartOfDay();
+
+        return postRepository.findByDateCreatedBetween(fromDataTime,toDateTime).stream()
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
     }
 
     @Override
