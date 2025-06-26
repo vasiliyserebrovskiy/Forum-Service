@@ -119,6 +119,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public PostDto updatePost(Long id, AddPostDto addPostDto) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundException::new);
 
