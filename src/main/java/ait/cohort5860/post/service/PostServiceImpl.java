@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Vasilii Serebrovskii
@@ -97,7 +98,12 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostDto> findPostsByTags(Set<String> tags) {
-        return List.of();
+
+        Set<String> lowerTags = tags.stream().map(String::toLowerCase).collect(Collectors.toSet());
+
+        return postRepository.findDistinctByTagNamesIgnoreCase(lowerTags).stream()
+                .map(post -> modelMapper.map(post, PostDto.class))
+                .toList();
     }
 
     @Override

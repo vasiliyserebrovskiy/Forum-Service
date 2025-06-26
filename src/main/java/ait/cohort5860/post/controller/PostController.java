@@ -57,7 +57,7 @@ public class PostController {
     }
 
     @GetMapping("/posts/tags")
-    public List<PostDto> findPostsByTags(@RequestParam Set<String> tags) {
+    public List<PostDto> findPostsByTags(@RequestParam("values") Set<String> tags) {
         return postService.findPostsByTags(tags);
     }
 
