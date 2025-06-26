@@ -73,22 +73,26 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public PostDto addComment(Long id, String author, AddCommentDto addCommentDto) {
-        // 1 need to find post
         Post post = postRepository.findById(id).orElseThrow(NotFoundException::new);
-        // 2 create comment
         Comment comment = new Comment(author, addCommentDto.getMessage(), post);
-        // 3 save comment to DB
         commentRepository.save(comment);
-        // 4 add comment to post
         post.addComment(comment);
-        // 5 save post
         postRepository.save(post);
         return modelMapper.map(post, PostDto.class);
     }
 
     @Override
+    @Transactional
     public PostDto deletePost(Long id) {
-        return null;
+        Post post = postRepository.findById(id).orElseThrow(NotFoundException::new);
+
+        // When we delete post, we also must delete all comments if they exist!
+        List<Comment> comments = commentRepository.findByPostId(post.getId());
+        if (!comments.isEmpty()) {
+            commentRepository.deleteAll(comments);
+        }
+        postRepository.delete(post);
+        return modelMapper.map(post, PostDto.class);
     }
 
     @Override
