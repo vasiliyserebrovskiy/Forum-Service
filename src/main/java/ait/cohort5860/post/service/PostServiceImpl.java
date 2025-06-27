@@ -58,6 +58,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    @Transactional
     public void addLike(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundException::new);
         post.addLike();
