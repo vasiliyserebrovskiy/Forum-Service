@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: forum-service
+
+  datasource:
+    url: jdbc:postgresql://cohort5860-vs-cohort5860.c.aivencloud.com:27530/defaultdb
+    username: avnadmin
+    password: ${AIVEN_PASS}
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true

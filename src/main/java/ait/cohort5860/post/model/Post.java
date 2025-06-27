@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,18 +24,26 @@ import java.util.Set;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private long id;
     @Setter
+    @Column(name = "title")
     private String title;
     @Setter
+    @Column(name = "content", columnDefinition = "TEXT")
     private String content;
     @Setter
+    @Column(name = "author")
     private String author;
+    @Column(name = "date_created")
     private LocalDateTime dateCreated = LocalDateTime.now();
-    @ManyToMany
-    private Set<Tag> tags = new HashSet<>();
+    @Column(name = "likes")
     private int likes;
-    @OneToMany(mappedBy = "post") // mappedBy in parent entity
+    @ManyToMany
+    @JoinTable(name = "posts_tags", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_name"))
+    private Set<Tag> tags = new HashSet<>();
+                                    // before adding need to change deletePost method hibernate made request for adding
+    @OneToMany(mappedBy = "post")//, cascade = CascadeType.ALL) // mappedBy in parent entity
     private List<Comment> comments = new ArrayList<>();
 
     public Post(String title, String content, String author) {
