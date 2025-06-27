@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -62,8 +63,8 @@ public class PostServiceImpl implements PostService {
     public void addLike(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundException::new);
         post.addLike();
-        postRepository.save(post);
-
+       // postRepository.save(post); // this is not needable. We do not need to save while Transactional update
+        //Transactional start commit operation after the method was done.
     }
 
     @Override
@@ -83,6 +84,17 @@ public class PostServiceImpl implements PostService {
         postRepository.save(post);
         return modelMapper.map(post, PostDto.class);
     }
+    //Using setter
+//    public PostDto addComment(Long id, String author, AddCommentDto addCommentDto) {
+//        Post post = postRepository.findById(id).orElseThrow(NotFoundException::new);
+//        Comment comment = new Comment(author, addCommentDto.getMessage());
+//        post.addComment(comment);
+//        commentRepository.save(comment);
+//        comment.setPost(post);
+//        return modelMapper.map(post, PostDto.class);
+//    }
+    //My variant
+
 
     @Override
     @Transactional
@@ -113,6 +125,7 @@ public class PostServiceImpl implements PostService {
 
         LocalDateTime fromDataTime = from.atStartOfDay();
         LocalDateTime toDateTime = to.plusDays(1).atStartOfDay();
+        //LocalDateTime toDateTime = to.atTime(LocalTime.MAX); another variant
 
         return postRepository.findByDateCreatedBetween(fromDataTime, toDateTime).stream()
                 .map(post -> modelMapper.map(post, PostDto.class))
@@ -158,7 +171,7 @@ public class PostServiceImpl implements PostService {
             post.setContent(addPostDto.getContent());
         }
 
-        postRepository.save(post);
+        postRepository.save(post); // here not needable
         return modelMapper.map(post, PostDto.class);
     }
 }
