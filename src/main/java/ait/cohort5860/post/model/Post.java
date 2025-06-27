@@ -43,7 +43,7 @@ public class Post {
     @JoinTable(name = "posts_tags", joinColumns = @JoinColumn(name = "post_id"), inverseJoinColumns = @JoinColumn(name = "tag_name"))
     private Set<Tag> tags = new HashSet<>();
                                     // before adding need to change deletePost method hibernate made request for adding
-    @OneToMany(mappedBy = "post")//, cascade = CascadeType.ALL) // mappedBy in parent entity
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL) // mappedBy in parent entity
     private List<Comment> comments = new ArrayList<>();
 
     public Post(String title, String content, String author) {

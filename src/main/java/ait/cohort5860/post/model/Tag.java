@@ -13,7 +13,7 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode(of = {"name"})
-@Entity // Database entity first must have annotation
+@Entity // Database entity - first must have annotation
 @Table(name = "tags")
 public class Tag {
     @Id // which parameter is id in DB - second must have annotation

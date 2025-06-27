@@ -14,12 +14,12 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+
 
 /**
  * @author Vasilii Serebrovskii
@@ -36,19 +36,11 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public PostDto addPost(String author, AddPostDto addPostDto) {
-        Post post = new Post(addPostDto.getTitle(), addPostDto.getContent(), author);
+    public PostDto addPost(String author, AddPostDto newPostDto) {
+        Post post = new Post(newPostDto.getTitle(), newPostDto.getContent(), author);
 
         // Handle tags
-        Set<String> tags = addPostDto.getTags();
-        if (tags != null) {
-            for (String tagName : tags) {
-                Tag tag = tagRepository.findById(tagName).orElseGet(() -> tagRepository.save(new Tag(tagName)));
-                post.addTag(tag);
-            }
-        }
-        post = postRepository.save(post);
-        return modelMapper.map(post, PostDto.class);
+        return getPostDto(newPostDto, post);
     }
 
     @Override
@@ -62,14 +54,13 @@ public class PostServiceImpl implements PostService {
     public void addLike(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundException::new);
         post.addLike();
-        postRepository.save(post);
-
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PostDto> findPostsByAuthor(String author) {
-        return postRepository.findPostsByAuthor(author).stream()
-                .map(post -> modelMapper.map(post, PostDto.class))
+        return postRepository.findByAuthorIgnoreCase(author)
+                .map(p -> modelMapper.map(p, PostDto.class))
                 .toList();
     }
 
@@ -88,77 +79,53 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public PostDto deletePost(Long id) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundException::new);
-
-        // When we delete post, we also must delete all comments if they exist!
-        List<Comment> comments = commentRepository.findByPostId(post.getId());
-        if (!comments.isEmpty()) {
-            commentRepository.deleteAll(comments);
-        }
         postRepository.delete(post);
         return modelMapper.map(post, PostDto.class);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<PostDto> findPostsByTags(Set<String> tags) {
-
-        Set<String> lowerTags = tags.stream().map(String::toLowerCase).collect(Collectors.toSet());
-
-        return postRepository.findDistinctByTagNamesIgnoreCase(lowerTags).stream()
-                .map(post -> modelMapper.map(post, PostDto.class))
+        return postRepository.findDistinctByTagsNameInIgnoreCase(tags)
+                .map(p -> modelMapper.map(p, PostDto.class))
                 .toList();
     }
 
     @Override
-    public List<PostDto> findPostsByPeriod(LocalDate from, LocalDate to) {
-
-        LocalDateTime fromDataTime = from.atStartOfDay();
-        LocalDateTime toDateTime = to.plusDays(1).atStartOfDay();
-
-        return postRepository.findByDateCreatedBetween(fromDataTime, toDateTime).stream()
-                .map(post -> modelMapper.map(post, PostDto.class))
+    @Transactional(readOnly = true)
+    public List<PostDto> findPostsByPeriod(LocalDate dateFrom, LocalDate dateTo) {
+        LocalDateTime from = dateFrom.atStartOfDay();
+        LocalDateTime to = dateTo.atTime(LocalTime.MAX);
+        return postRepository.findByDateCreatedBetween(from, to)
+                .map(p -> modelMapper.map(p, PostDto.class))
                 .toList();
     }
 
     @Override
     @Transactional
-    public PostDto updatePost(Long id, AddPostDto addPostDto) {
+    public PostDto updatePost(Long id, AddPostDto newPostDto) {
         Post post = postRepository.findById(id).orElseThrow(NotFoundException::new);
+        String content = newPostDto.getContent();
+        if (content != null) {
+            post.setContent(content);
+        }
+        String title = newPostDto.getTitle();
+        if (title != null) {
+            post.setTitle(title);
+        }
+        return getPostDto(newPostDto, post);
+    }
 
-        // Working with tags
-        // We need to correct Tags: delete old and create new for this post if Set<Tag> newTags not empty
-        Set<String> newTags = addPostDto.getTags();
-        if (!newTags.isEmpty()) {
-            // remove all old tags, which we did not have in new Set<Tags>
-            Set<Tag> existingTags = post.getTags();
-            existingTags.removeIf(tag ->
-                    newTags.stream()
-                            .noneMatch(name -> name.equalsIgnoreCase(tag.getName()))
-            );
-
-            //add new Tags
-            for (String tagName : newTags) {
-                boolean exists = existingTags.stream()
-                        .anyMatch(tag -> tag.getName().equalsIgnoreCase(tagName));
-
-                if (!exists) {
-                    Tag tag = tagRepository.findByNameIgnoreCase(tagName)
-                            .orElseGet(() -> tagRepository.save(new Tag(tagName)));
-                    existingTags.add(tag);
-                }
+    private PostDto getPostDto(AddPostDto newPostDto, Post post) {
+        Set<String> tags = newPostDto.getTags();
+        if (tags != null) {
+            for (String tagName : tags) {
+                Tag tag = tagRepository.findById(tagName)
+                        .orElseGet(() -> tagRepository.save(new Tag(tagName)));
+                post.addTag(tag);
             }
-        } // end for newTags != null
-
-        // Working with title
-        if (!addPostDto.getTitle().isEmpty()) {
-            post.setTitle(addPostDto.getTitle());
         }
-
-        // Working with content
-        if (!addPostDto.getContent().isEmpty()) {
-            post.setContent(addPostDto.getContent());
-        }
-
-        postRepository.save(post);
+        post = postRepository.save(post);
         return modelMapper.map(post, PostDto.class);
     }
 }
