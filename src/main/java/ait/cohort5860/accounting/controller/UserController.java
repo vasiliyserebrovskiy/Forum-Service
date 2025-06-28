@@ -40,8 +40,8 @@ public class UserController {
     }
 
     @DeleteMapping("/user/{login}/role/{role}")
-    public ResponseAddRoleDto deleteRole(@PathVariable String login, @PathVariable String roleName) {
-        return userService.deleteRole(login, roleName);
+    public ResponseAddRoleDto deleteRole(@PathVariable String login, @PathVariable String role) {
+        return userService.deleteRole(login, role);
     }
 
     // here must be changePassword method
