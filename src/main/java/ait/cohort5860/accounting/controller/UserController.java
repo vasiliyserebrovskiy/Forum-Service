@@ -19,7 +19,6 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    @ResponseStatus(HttpStatus.CONFLICT)
     public UserDto registerNewUser(@RequestBody String login, @RequestBody String password, @RequestBody String firstName, @RequestBody String lastName) {
         return userService.registerNewUser(login, password, firstName, lastName);
     }
