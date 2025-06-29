@@ -4,6 +4,7 @@ import ait.cohort5860.accounting.dto.ResponseAddRoleDto;
 import ait.cohort5860.accounting.dto.UserDto;
 import ait.cohort5860.accounting.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -18,6 +19,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CONFLICT)
     public UserDto registerNewUser(@RequestBody String login, @RequestBody String password, @RequestBody String firstName, @RequestBody String lastName) {
         return userService.registerNewUser(login, password, firstName, lastName);
     }
