@@ -8,5 +8,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @version 1.0 (20.06.2025)
  */
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class NotFoundException extends RuntimeException {
+public class UserNotFoundException extends RuntimeException {
+    public UserNotFoundException(String message) {
+        super(message);
+    }
 }

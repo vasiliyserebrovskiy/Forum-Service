@@ -1,6 +1,6 @@
 package ait.cohort5860.accounting.dto;
 
-import lombok.Getter;
+import lombok.*;
 
 import java.util.Set;
 
@@ -9,7 +9,11 @@ import java.util.Set;
  * @version 1.0 (28.06.2025)
  */
 @Getter
-public class ResponseAddRoleDto {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class RolesDto {
     private String login;
-    private Set<AddRoleDto> roles;
+    @Singular
+    private Set<String> roles;
 }

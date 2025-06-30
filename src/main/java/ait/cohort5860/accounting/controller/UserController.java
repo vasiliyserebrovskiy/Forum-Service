@@ -1,10 +1,9 @@
 package ait.cohort5860.accounting.controller;
 
-import ait.cohort5860.accounting.dto.ResponseAddRoleDto;
+import ait.cohort5860.accounting.dto.RolesDto;
 import ait.cohort5860.accounting.dto.UserDto;
 import ait.cohort5860.accounting.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -36,12 +35,12 @@ public class UserController {
     }
 
     @PatchMapping("/user/{login}/role/{role}")
-    public ResponseAddRoleDto addRole(@PathVariable String login, @PathVariable String role) {
+    public RolesDto addRole(@PathVariable String login, @PathVariable String role) {
         return userService.addRole(login, role);
     }
 
     @DeleteMapping("/user/{login}/role/{role}")
-    public ResponseAddRoleDto deleteRole(@PathVariable String login, @PathVariable String role) {
+    public RolesDto deleteRole(@PathVariable String login, @PathVariable String role) {
         return userService.deleteRole(login, role);
     }
 
