@@ -6,12 +6,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 /**
  * @author Vasilii Serebrovskii
- * @version 1.0 (20.06.2025)
+ * @version 1.0 (30.06.2025)
  */
-@ResponseStatus(HttpStatus.NOT_FOUND)
+@ResponseStatus(HttpStatus.BAD_REQUEST)
 @NoArgsConstructor
-public class UserNotFoundException extends RuntimeException {
-    public UserNotFoundException(String message) {
+public class InvalidDataException extends RuntimeException{
+    public InvalidDataException(String message) {
         super(message);
     }
 }

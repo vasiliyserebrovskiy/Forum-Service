@@ -1,6 +1,8 @@
 package ait.cohort5860.accounting.controller;
 
+import ait.cohort5860.accounting.dto.RegisterUserDto;
 import ait.cohort5860.accounting.dto.RolesDto;
+import ait.cohort5860.accounting.dto.UpdateUserDto;
 import ait.cohort5860.accounting.dto.UserDto;
 import ait.cohort5860.accounting.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +21,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/register")
-    public UserDto registerNewUser(@RequestBody String login, @RequestBody String password, @RequestBody String firstName, @RequestBody String lastName) {
-        return userService.registerNewUser(login, password, firstName, lastName);
+    public UserDto registerNewUser(@RequestBody RegisterUserDto registerUserDto) {
+        return userService.registerNewUser(registerUserDto);
     }
 
     @PostMapping("/login")
@@ -35,8 +37,8 @@ public class UserController {
     }
 
     @PatchMapping("/user/{login}")
-    public UserDto updateUser(@PathVariable String login, @RequestBody String firstName, @RequestBody String lastName) {
-        return userService.updateUser(login, firstName, lastName);
+    public UserDto updateUser(@PathVariable String login, @RequestBody UpdateUserDto updateUserDto) {
+        return userService.updateUser(login, updateUserDto);
     }
 
     @PatchMapping("/user/{login}/role/{role}")
