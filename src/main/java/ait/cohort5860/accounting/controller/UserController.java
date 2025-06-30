@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 /**
  * @author Vasilii Serebrovskii
  * @version 1.0 (28.06.2025)
@@ -26,9 +28,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public UserDto login() {
-        // TODO
-        return null;
+    public UserDto login(Principal principal) {
+
+        return userService.getUserByLogin(principal.getName()) ;
     }
 
     @DeleteMapping("/user/{login}")
@@ -53,12 +55,14 @@ public class UserController {
 
     @PatchMapping("/password")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void changePassword() {
-        // TODO
+    public void changePassword(Principal principal, @RequestHeader("X-Password") String newPassword) {
+        userService.changePassword(principal.getName(), newPassword);
     }
 
     @GetMapping("/user/{login}")
     public UserDto getUserByLogin(@PathVariable String login) {
         return userService.getUserByLogin(login);
     }
+
+
 }
