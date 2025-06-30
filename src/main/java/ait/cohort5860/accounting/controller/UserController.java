@@ -4,6 +4,7 @@ import ait.cohort5860.accounting.dto.RolesDto;
 import ait.cohort5860.accounting.dto.UserDto;
 import ait.cohort5860.accounting.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -22,7 +23,11 @@ public class UserController {
         return userService.registerNewUser(login, password, firstName, lastName);
     }
 
-    // here must be login method
+    @PostMapping("/login")
+    public UserDto login() {
+        // TODO
+        return null;
+    }
 
     @DeleteMapping("/user/{login}")
     public UserDto deleteUser(@PathVariable String login) {
@@ -36,15 +41,19 @@ public class UserController {
 
     @PatchMapping("/user/{login}/role/{role}")
     public RolesDto addRole(@PathVariable String login, @PathVariable String role) {
-        return userService.addRole(login, role);
+        return userService.changeRolesList(login, role, true);
     }
 
     @DeleteMapping("/user/{login}/role/{role}")
     public RolesDto deleteRole(@PathVariable String login, @PathVariable String role) {
-        return userService.deleteRole(login, role);
+        return userService.changeRolesList(login, role, false);
     }
 
-    // here must be changePassword method
+    @PatchMapping("/password")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void changePassword() {
+        // TODO
+    }
 
     @GetMapping("/user/{login}")
     public UserDto getUserByLogin(@PathVariable String login) {
