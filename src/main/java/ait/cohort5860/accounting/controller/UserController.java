@@ -5,6 +5,7 @@ import ait.cohort5860.accounting.dto.RolesDto;
 import ait.cohort5860.accounting.dto.UpdateUserDto;
 import ait.cohort5860.accounting.dto.UserDto;
 import ait.cohort5860.accounting.service.UserService;
+import ait.cohort5860.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
