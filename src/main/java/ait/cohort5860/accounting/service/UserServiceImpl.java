@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService, CommandLineRunner {
     @Override
     public void changePassword(String login, String newPassword) {
         UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(UserNotFoundException::new);
-        userAccount.setPassword(newPassword);
+        userAccount.setPassword(passwordEncoder.encode(newPassword));
         userAccountRepository.save(userAccount);
     }
 

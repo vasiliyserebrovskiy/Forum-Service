@@ -7,8 +7,10 @@ import ait.cohort5860.accounting.dto.UserDto;
 import ait.cohort5860.accounting.service.UserService;
 import ait.cohort5860.security.UserDetailsServiceImpl;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -41,7 +43,7 @@ public class UserController {
     }
 
     @PatchMapping("/user/{login}")
-    public UserDto updateUser(@PathVariable String login, @RequestBody UpdateUserDto updateUserDto) {
+    public UserDto updateUser(@PathVariable String login, @RequestBody @Valid UpdateUserDto updateUserDto) {
         return userService.updateUser(login, updateUserDto);
     }
 
