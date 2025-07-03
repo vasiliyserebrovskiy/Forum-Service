@@ -1,10 +1,7 @@
 package ait.cohort5860.accounting.service;
 
 import ait.cohort5860.accounting.dao.UserAccountRepository;
-import ait.cohort5860.accounting.dto.RegisterUserDto;
-import ait.cohort5860.accounting.dto.RolesDto;
-import ait.cohort5860.accounting.dto.UpdateUserDto;
-import ait.cohort5860.accounting.dto.UserDto;
+import ait.cohort5860.accounting.dto.*;
 import ait.cohort5860.accounting.dto.exceptions.InvalidDataException;
 import ait.cohort5860.accounting.dto.exceptions.UserExistsException;
 import ait.cohort5860.accounting.dto.exceptions.UserNotFoundException;
@@ -13,6 +10,8 @@ import ait.cohort5860.accounting.model.UserAccount;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +26,7 @@ public class UserServiceImpl implements UserService, CommandLineRunner {
     private final UserAccountRepository userAccountRepository;
     private final ModelMapper modelMapper;
     private final PasswordEncoder passwordEncoder;
+    private final JavaMailSender mailSender;
 
     @Override
     public UserDto registerNewUser(RegisterUserDto registerUserDto) {
@@ -88,6 +88,15 @@ public class UserServiceImpl implements UserService, CommandLineRunner {
         UserAccount userAccount = userAccountRepository.findById(login).orElseThrow(UserNotFoundException::new);
         userAccount.setPassword(passwordEncoder.encode(newPassword));
         userAccountRepository.save(userAccount);
+    }
+
+    @Override
+    public void sendEmail(EmailDto emailDto) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(emailDto.getTo());
+        message.setSubject(emailDto.getSubject());
+        message.setText(emailDto.getMessage());
+        mailSender.send(message);
     }
 
     @Override

@@ -1,9 +1,6 @@
 package ait.cohort5860.accounting.controller;
 
-import ait.cohort5860.accounting.dto.RegisterUserDto;
-import ait.cohort5860.accounting.dto.RolesDto;
-import ait.cohort5860.accounting.dto.UpdateUserDto;
-import ait.cohort5860.accounting.dto.UserDto;
+import ait.cohort5860.accounting.dto.*;
 import ait.cohort5860.accounting.service.UserService;
 import ait.cohort5860.security.UserDetailsServiceImpl;
 import jakarta.validation.Valid;
@@ -68,5 +65,8 @@ public class UserController {
         return userService.getUserByLogin(login);
     }
 
-
+    @PostMapping("/email")
+    public void sendEmail(@RequestBody @Valid EmailDto emailDto) {
+        userService.sendEmail(emailDto);
+    };
 }

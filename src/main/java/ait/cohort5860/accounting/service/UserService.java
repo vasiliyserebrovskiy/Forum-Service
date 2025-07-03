@@ -1,9 +1,6 @@
 package ait.cohort5860.accounting.service;
 
-import ait.cohort5860.accounting.dto.RegisterUserDto;
-import ait.cohort5860.accounting.dto.RolesDto;
-import ait.cohort5860.accounting.dto.UpdateUserDto;
-import ait.cohort5860.accounting.dto.UserDto;
+import ait.cohort5860.accounting.dto.*;
 
 public interface UserService {
 
@@ -18,5 +15,7 @@ public interface UserService {
     UserDto getUserByLogin(String login);
 
     void changePassword(String login, String newPassword);
+
+    void sendEmail(EmailDto emailDto);
 
 }
