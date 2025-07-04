@@ -56,7 +56,7 @@ public class SecurityConfiguration {
                     return new AuthorizationDecision(isAuthor || isModerator);
                 })
                 .anyRequest()
-                .authenticated());
+                    .authenticated());
         return http.build();
     }
 

@@ -1,15 +1,13 @@
 package ait.cohort5860.post.dto;
 
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author Vasilii Serebrovskii
  * @version 1.0 (04.07.2025)
  */
 @Getter
-@Setter
-public class FileResponseDto {
+public class FileDto {
+    private Long id;
     private String filename;
-    private String downloadUrl;
 }

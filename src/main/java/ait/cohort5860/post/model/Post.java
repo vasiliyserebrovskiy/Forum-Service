@@ -46,6 +46,9 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL) // mappedBy in parent entity
     private List<Comment> comments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL) // mappedBy in parent entity
+    private List<FileEntity> files = new ArrayList<>();
+
     public Post(String title, String content, String author) {
         this.title = title;
         this.content = content;

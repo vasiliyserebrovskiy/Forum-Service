@@ -1,14 +1,16 @@
 package ait.cohort5860.post.controller;
 
-import ait.cohort5860.post.dto.AddCommentDto;
-import ait.cohort5860.post.dto.AddPostDto;
-import ait.cohort5860.post.dto.CommentDto;
-import ait.cohort5860.post.dto.PostDto;
+import ait.cohort5860.post.dto.*;
+import ait.cohort5860.post.model.FileEntity;
 import ait.cohort5860.post.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -71,5 +73,25 @@ public class PostController {
     @PatchMapping("/post/{id}")
     public PostDto updatePost(@PathVariable Long id, @RequestBody AddPostDto addPostDto) {
         return postService.updatePost(id, addPostDto);
+    }
+
+    // Files endpoints
+    @PostMapping("/post/{postId}/upload")
+    public ResponseEntity<FileResponseDto> uploadFile(@PathVariable Long postId, @RequestParam("file") MultipartFile file) {
+        System.out.println("We are here!");
+        System.out.println("File: " + file.getOriginalFilename());
+        System.out.println("File Size: " + file.getSize());
+        FileResponseDto dto = postService.storeFile(postId, file);
+        return ResponseEntity.ok(dto);
+    }
+
+    @GetMapping("/post/download/{fileId}")
+    public ResponseEntity<byte[]> downloadFile(@PathVariable Long fileId) {
+        FileEntity file = postService.getFile(fileId);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFileName() + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(file.getData());
     }
 }

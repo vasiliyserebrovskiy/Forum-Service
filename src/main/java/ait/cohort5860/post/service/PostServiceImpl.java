@@ -1,21 +1,29 @@
 package ait.cohort5860.post.service;
 
 import ait.cohort5860.post.dao.CommentRepository;
+import ait.cohort5860.post.dao.FileRepository;
 import ait.cohort5860.post.dao.PostRepository;
 import ait.cohort5860.post.dao.TagRepository;
 import ait.cohort5860.post.dto.AddCommentDto;
 import ait.cohort5860.post.dto.AddPostDto;
+import ait.cohort5860.post.dto.FileResponseDto;
 import ait.cohort5860.post.dto.PostDto;
 import ait.cohort5860.post.dto.exceptions.NotFoundException;
 import ait.cohort5860.post.model.Comment;
+import ait.cohort5860.post.model.FileEntity;
 import ait.cohort5860.post.model.Post;
 import ait.cohort5860.post.model.Tag;
 import ait.cohort5860.post.service.logging.PostLogger;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.monitor.FileEntry;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -35,6 +43,7 @@ public class PostServiceImpl implements PostService {
     private final TagRepository tagRepository;
     private final CommentRepository commentRepository;
     private final ModelMapper modelMapper;
+    private final FileRepository fileRepository;
 
     @Override
     @Transactional
@@ -132,4 +141,35 @@ public class PostServiceImpl implements PostService {
         post = postRepository.save(post);
         return modelMapper.map(post, PostDto.class);
     }
+
+    // Files methods
+    @Override
+    @Transactional
+    public FileResponseDto storeFile(Long postId, MultipartFile multipartFile) {
+        try {
+            Post post = postRepository.findById(postId).orElseThrow(NotFoundException::new);
+            FileEntity file = new FileEntity();
+            file.setFileName(multipartFile.getOriginalFilename());
+            file.setContentType(multipartFile.getContentType());
+            file.setData(multipartFile.getBytes());
+            file.setPost(post);
+
+            FileEntity saved = fileRepository.save(file);
+
+            FileResponseDto dto = new FileResponseDto();
+            dto.setFilename(saved.getFileName());
+            dto.setDownloadUrl("/files/download/" + saved.getId());
+
+            return dto;
+        } catch (IOException e) {
+            throw new RuntimeException("Не удалось сохранить файл", e);
+        }
+    }
+
+    @Override
+    public FileEntity getFile(Long fileId) {
+        return fileRepository.findById(fileId)
+                .orElseThrow(() -> new EntityNotFoundException("File not found by id: " + fileId));
+    }
+
 }
