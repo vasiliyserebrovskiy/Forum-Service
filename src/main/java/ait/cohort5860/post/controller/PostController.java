@@ -94,4 +94,14 @@ public class PostController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(file.getData());
     }
+
+    @GetMapping("/post/{postId}/files")
+    public List<FileDto> getPostFiles(@PathVariable Long postId) {
+        return postService.getPostFiles(postId);
+    }
+
+    @DeleteMapping("/post/files/{fileId}")
+    public FileResponseDto deleteFile(@PathVariable Long fileId) {
+        return postService.deleteFile(fileId);
+    }
 }

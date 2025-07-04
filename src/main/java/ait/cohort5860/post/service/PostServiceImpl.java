@@ -4,10 +4,7 @@ import ait.cohort5860.post.dao.CommentRepository;
 import ait.cohort5860.post.dao.FileRepository;
 import ait.cohort5860.post.dao.PostRepository;
 import ait.cohort5860.post.dao.TagRepository;
-import ait.cohort5860.post.dto.AddCommentDto;
-import ait.cohort5860.post.dto.AddPostDto;
-import ait.cohort5860.post.dto.FileResponseDto;
-import ait.cohort5860.post.dto.PostDto;
+import ait.cohort5860.post.dto.*;
 import ait.cohort5860.post.dto.exceptions.NotFoundException;
 import ait.cohort5860.post.model.Comment;
 import ait.cohort5860.post.model.FileEntity;
@@ -169,7 +166,26 @@ public class PostServiceImpl implements PostService {
     @Override
     public FileEntity getFile(Long fileId) {
         return fileRepository.findById(fileId)
-                .orElseThrow(() -> new EntityNotFoundException("File not found by id: " + fileId));
+                .orElseThrow(NotFoundException::new);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<FileDto> getPostFiles(Long postId) {
+        System.out.println("BEFORE FINDING IN REPOSITORY: " + postId + "");
+        List<FileEntity> files = fileRepository.findAllByPostId(postId);
+        return files.stream()
+                .map(file -> modelMapper.map(file, FileDto.class)).toList();
+    }
+    @Override
+    public FileResponseDto deleteFile(Long fileId) {
+        FileEntity file = fileRepository.findById(fileId)
+                .orElseThrow(NotFoundException::new);
+        fileRepository.delete(file);
+        FileResponseDto dto = new FileResponseDto();
+        dto.setFilename(file.getFileName());
+        dto.setDownloadUrl("/files/download/" + file.getId());
+        return dto;
     }
 
 }

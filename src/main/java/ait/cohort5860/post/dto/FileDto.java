@@ -1,5 +1,6 @@
 package ait.cohort5860.post.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 /**
@@ -9,5 +10,6 @@ import lombok.Getter;
 @Getter
 public class FileDto {
     private Long id;
-    private String filename;
+    @JsonProperty("filename")
+    private String fileName;
 }

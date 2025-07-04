@@ -33,8 +33,8 @@ public interface PostService {
 
     FileEntity getFile(Long fileId);
 
-    //FileResponseDto deleteFile(Long postId, Long fileId);
+    FileResponseDto deleteFile(Long fileId);
 
-    //List<FileDto> getPostFiles(Long postId);
+    List<FileDto> getPostFiles(Long postId);
 
 }
